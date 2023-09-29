@@ -667,6 +667,18 @@ progress {
     max-width: 1320px;
   }
 }
+
+        /* Дополнительные стили для кнопок */
+        .btn-custom {
+          background-color: #007bff; /* Синий цвет */
+          color: white;
+          border: none;
+          transition: 0.3s;
+      }
+
+      .btn-custom:hover {
+          background-color: #0056b3; /* Темно-синий цвет при наведении */
+      }
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
@@ -69073,7 +69085,3 @@ table.dataTable.no-footer {
     opacity: 0;
   }
 }
-/*
-    ADD Custom code bellow this block  
-*/
-/*# sourceMappingURL=index.css.map */
