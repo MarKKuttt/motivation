@@ -42,3 +42,21 @@ def pages(request):
     except:
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
+
+
+def recalc_anomaly():
+    # Обновляет модель TimeSeriesAnomalies
+
+
+def download_data():
+    # Выгрузка датасета Appeal
+
+
+def main_page():
+    context = {
+        'Все обращения с тэгами + токсик + конструктив': ...,  # здесь даты есть
+        'Аномалия по тэгам': ...,  # здесь даты нет, тэг уникален
+        'Пользователи с рейтингом': ...,  # без даты
+
+    }
+    return context
