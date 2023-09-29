@@ -54,18 +54,13 @@ class Tag(models.Model):
             code='invalid_hex_code'
         )],
         verbose_name=_('HEX код'),
-        unique=True,
+        unique=False,
         default='#FF0000'
-    )
-    slug = models.SlugField(
-        verbose_name=_('Slug тега'),
-        max_length=200,
-        unique=True
     )
     group = models.CharField(
         max_length=30,
         unique=False,
-        verbose_name=_('Группа тэгв'),
+        verbose_name=_('Группа тэга'),
     )
 
     class Meta:
