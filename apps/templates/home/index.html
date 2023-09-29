@@ -217,8 +217,13 @@
 
 
           const jsonData = {
-            '2023-W39': {'Tag1-тоуотмуомутоамтоумтоумтоум': 10, 'Tag2': 15},
-            '2023-W02': {'Tag1': 20, 'Tag2': 25},
+            '2023-W39': {'Tag1-тоуотмуомутоамтоум33333333333333333тоумтоум': 10, 'Tag2': 15},
+            '2023-W04': {'Tag1': 20, 'Tag2': 25},
+            '2023-W05': {'Tag221': 10, 'Tag2': 25},
+            '2023-W03': {'Tag111': 20, 'Tag234': 25},
+            '2023-W07': {'Tag321': 10, 'Tag2': 25},
+            '2023-W09': {'Tag221': 10, 'Tag2': 25},
+            '2023-W08': {'Tag12311': 20, 'Tag234': 25},
           };
         
           const anomalyData = {
@@ -324,7 +329,7 @@
           populateTagFilter(uniqueTags, 'tagFilter');
           populateTagFilter(uniqueTags, 'anomalyFilter');
           plotGraph(jsonData, 'line-chart');
-          plotGraph_bar(anomalyData, 'anomaly-chart');
+          plotGraph(anomalyData, 'anomaly-chart');
 
           // Обработчики событий
           const tagFilter = document.getElementById('tagFilter');
@@ -342,7 +347,195 @@
           });
         </script>
 
-      
+<head>
+  <title>Статистика по тегам</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<div class="bd bgc-white">
+  <div class="layers">
+      <div class="layer w-100 p-20">
+          <h3>Распределение по тегам</h3>
+          <!-- <label for="timeFilter">Выберите временной период: </label>
+          <select id="timeFilter"> -->
+              <option value="year">Этот год</option>
+              <option value="quarter">Этот квартал</option>
+              <option value="month">Этот месяц</option>
+              <option value="week" selected>Эта неделя</option>
+          </select>
+          <div id="pie-chart" style="height: 400px;"></div>
+      </div>
+  </div>
+</div>
+</div>
+<script>
+
+
+  const timeFilterElement = document.getElementById('timeFilter');
+  timeFilterElement.addEventListener('change', () => {
+      updatePieChart();
+  });
+
+  function filterDataByTime(data, timeValue) {
+      let filteredData = {};
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+
+      switch(timeValue) {
+              case 'week':
+                // Определите начало и конец текущей недели
+                const startOfWeek = new Date(currentDate);
+                startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+                const endOfWeek = new Date(currentDate);
+                endOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 7);
+
+                // Фильтрация данных
+                for(const date in data) {
+                  const yearWeek = date.split('-W');
+                  const year = parseInt(yearWeek[0]);
+                  const week = parseInt(yearWeek[1]);
+
+                  // Найти дату начала недели
+                  const dateOfStartOfWeek = new Date(year, 0, (week - 1) * 7 + 1);
+
+                  if(dateOfStartOfWeek >= startOfWeek && dateOfStartOfWeek <= endOfWeek) {
+                    filteredData[date] = data[date];
+                  }
+                }
+                break;
+
+              case 'month':
+                for(const date in data) {
+                  const yearWeek = date.split('-W');
+                  const year = parseInt(yearWeek[0]);
+                  const week = parseInt(yearWeek[1]);
+
+                  // Найти дату начала недели
+                  const dateOfStartOfWeek = new Date(year, 0, (week - 1) * 7 + 1);
+
+                  if(dateOfStartOfWeek.getMonth() === currentDate.getMonth() &&
+                    dateOfStartOfWeek.getFullYear() === currentYear) {
+                    filteredData[date] = data[date];
+                  }
+                }
+                break;
+
+              case 'quarter':
+                const currentQuarter = Math.floor(currentDate.getMonth() / 3);
+                for(const date in data) {
+                  const yearWeek = date.split('-W');
+                  const year = parseInt(yearWeek[0]);
+                  const week = parseInt(yearWeek[1]);
+
+                  // Найти дату начала недели
+                  const dateOfStartOfWeek = new Date(year, 0, (week - 1) * 7 + 1);
+                  const weekQuarter = Math.floor(dateOfStartOfWeek.getMonth() / 3);
+
+                  if(weekQuarter === currentQuarter && dateOfStartOfWeek.getFullYear() === currentYear) {
+                    filteredData[date] = data[date];
+                  }
+                }
+                break;
+
+              case 'year':
+                for(const date in data) {
+                  const yearWeek = date.split('-W');
+                  const year = parseInt(yearWeek[0]);
+
+                  if(year === currentYear) {
+                    filteredData[date] = data[date];
+                  }
+                }
+                break;
+
+              default:
+                filteredData = { ...data };
+            }
+
+
+      return filteredData;
+  }
+
+  function aggregateDataByTags(filteredData) {
+      const aggregatedData = {};
+
+      for (const week in filteredData) {
+          for (const tag in filteredData[week]) {
+              if (!aggregatedData[tag]) aggregatedData[tag] = 0;
+              aggregatedData[tag] += filteredData[week][tag];
+          }
+      }
+
+      return aggregatedData;
+  }
+
+  function updatePieChart() {
+      const timeValue = timeFilterElement.value;
+      const filteredData = filterDataByTime(jsonData, timeValue);
+      const aggregatedData = aggregateDataByTags(filteredData);
+
+      const tags = Object.keys(aggregatedData);
+      const values = Object.values(aggregatedData);
+
+      const pieData = [{
+          values: values,
+          labels: tags,
+          type: 'pie'
+      }];
+
+      Plotly.newPlot('pie-chart', pieData);
+  }
+
+  // Начальное отображение графика
+  updatePieChart();
+
+</script>
+
+<head>
+  <title>Статистика рейтинга пользователей</title>
+</head>
+<body>
+
+      <div class="container mt-5">
+        <div class="bd bgc-white">
+          <div class="layers">
+            <div class="layer w-100 p-20">
+              <h3>Рейтинг пользователей</h3>
+              <div id="bar-chart" style="height: 400px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+          var data = {
+            users: Array.from({length: 100}, (_, i) => "User " + (i + 1)),
+            ratings: Array.from({length: 100}, () => Math.floor(Math.random() * 100))
+          };
+
+          // Получение топ 50 пользователей с наименьшим рейтингом
+          var sortedIndices = data.ratings.map((rating, index) => index).sort((a, b) => data.ratings[a] - data.ratings[b]);
+          var topUsers = sortedIndices.slice(0, 50).map(index => data.users[index]);
+          var topRatings = sortedIndices.slice(0, 50).map(index => data.ratings[index]);
+
+          // Создание столбчатой диаграммы
+          Plotly.newPlot('bar-chart', [{
+            x: topUsers,
+            y: topRatings,
+            type: 'bar'
+          }], {
+            title: 'Топ 50 пользователей с наименьшим рейтингом',
+            xaxis: {
+              title: 'Пользователь',
+              tickfont: {
+                size: 8  // установка меньшего размера шрифта для читаемости
+              }
+            },
+            yaxis: {
+              title: 'Уровень рейтинга'
+            }
+          });
+      </script>
+
 
       </div>
     </main>
