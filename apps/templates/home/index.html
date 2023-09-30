@@ -86,7 +86,7 @@
         </div>
         <!-- почему то эта штука ломает вкладку Table 😭 -->
         <!-- график с динамикой обращений по неделям -->
-        <head>  
+        <head>
           <title>Monthly Stats</title>
           <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         </head>
@@ -105,33 +105,21 @@
                 <option value="month">Этот месяц</option>
                 <option value="week">Эта неделя</option>
               </select>
-
+        
               <div id="line-chart" style="height: 400px;"></div>
-            </div>
-            <!-- Блок для второго графика -->
-            <div class="layer w-100 p-20">
-              <h3 title="Это график для отображения аномальных тегов по неделям. Что такое аномальный тег? По обращению есть конструктивное обращение. Это рейтинг от 0 до 1; 1 если есть и вложение и люди в описании и тэг определился, иначе 0">Аномалии по неделям</h3>
-              <label for="anomalyFilter">Выберите тег: </label>
-              <select id="anomalyFilter"></select>
-              
-              <div id="anomaly-chart" style="height: 400px;"></div>
             </div>
           </div>
         </div>
-      
+        
       
         <script>
+
           const timeFilter = document.getElementById('timeFilter');
 
           timeFilter.addEventListener('change', function() {
             const timeValue = this.value;
-            // Фильтрация данных в зависимости от выбранного времени
             const filteredJsonData = filterDataByTime(jsonData, timeValue);
-            const filteredAnomalyData = filterDataByTime(anomalyData, timeValue);
-            
-            // Обновление графиков
             plotGraph(filteredJsonData, 'line-chart', tagFilter.value);
-            plotGraph(filteredAnomalyData, 'anomaly-chart', anomalyFilter.value);
           });
 
 
@@ -217,19 +205,19 @@
 
 
           const jsonData = {
-            '2023-W39': {'Tag1-тоуотмуомутоамтоум33333333333333333тоумтоум': 10, 'Tag2': 15},
             '2023-W04': {'Tag1': 20, 'Tag2': 25},
             '2023-W05': {'Tag221': 10, 'Tag2': 25},
             '2023-W03': {'Tag111': 20, 'Tag234': 25},
             '2023-W07': {'Tag321': 10, 'Tag2': 25},
             '2023-W09': {'Tag221': 10, 'Tag2': 25},
             '2023-W08': {'Tag12311': 20, 'Tag234': 25},
+            '2023-W40': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+            '2023-W41': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+            '2023-W49': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+
           };
         
-          const anomalyData = {
-            '2023-W39': {'Tag1': 2, 'Tag2': 1},
-            '2023-W02': {'Tag1': 3, 'Tag2': 4},
-          };
+
       
           function getUniqueTags(data) {
             const tags = new Set();
@@ -250,8 +238,9 @@
           }
       
           function plotGraph(data, chartElementId, filterTag = 'all') {
-            const traces = [];
-            let tags = filterTag === 'all' ? getUniqueTags(data) : [filterTag];
+          const traces = [];
+          let tags = filterTag === 'all' ? getUniqueTags(data) : [filterTag];
+
             
             tags.forEach((tag, index) => {
                 const trace = {
@@ -327,25 +316,93 @@
           // Инициализация
           const uniqueTags = getUniqueTags(jsonData);
           populateTagFilter(uniqueTags, 'tagFilter');
-          populateTagFilter(uniqueTags, 'anomalyFilter');
           plotGraph(jsonData, 'line-chart');
-          plotGraph(anomalyData, 'anomaly-chart');
 
-          // Обработчики событий
           const tagFilter = document.getElementById('tagFilter');
-          const anomalyFilter = document.getElementById('anomalyFilter');
 
           tagFilter.addEventListener('change', function() {
-            anomalyFilter.value = this.value;
             plotGraph(jsonData, 'line-chart', this.value);
-            plotGraph(anomalyData, 'anomaly-chart', this.value);
-          });
-          anomalyFilter.addEventListener('change', function() {
-            tagFilter.value = this.value;
-            plotGraph(jsonData, 'line-chart', this.value);
-            plotGraph(anomalyData, 'anomaly-chart', this.value);
+            // plotGraph(anomalyData, 'anomaly-chart', this.value);
           });
         </script>
+
+<head>
+  <title>Статистика по аномальным тегам</title>
+  <style>
+    .redText {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bd bgc-white">
+  <div class="layers">
+    <div class="layer w-100 p-20">
+      <h3>Аномальные теги</h3>
+      <!-- Место для надписи о времени последнего обновления -->
+      <div id="lastUpdated"></div>
+      <div id="anomalyBarChart" style="height: 400px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Здесь должен быть ваш код для получения anomalyjson.
+  const anomalyjson = {'Tag1': 10, 'Tag2': 20, 'Tag3': 5, 'Tag4': 15};
+
+  // Предположим, дата последнего обновления аномальности (в формате 'YYYY-MM-DD')
+  const lastUpdatedDate = '2023-09-25';
+
+  // Рассчитываем разницу в днях между текущей датой и датой последнего обновления
+  const today = new Date();
+  const lastUpdated = new Date(lastUpdatedDate);
+  const diffInDays = Math.ceil((today - lastUpdated) / (1000 * 60 * 60 * 24));
+
+  // Добавляем информацию о дате последнего обновления
+  const lastUpdatedDiv = document.getElementById('lastUpdated');
+  lastUpdatedDiv.innerHTML = `Последнее обновление: ${lastUpdatedDate}`;
+  
+  // Если разница в днях больше 3, делаем текст красным
+  if (diffInDays > 3) {
+    lastUpdatedDiv.classList.add('redText');
+  }
+
+  // Сортировка тегов по аномальности в порядке убывания
+  const sortedTags = Object.keys(anomalyjson).sort((a, b) => anomalyjson[b] - anomalyjson[a]);
+
+  // Сбор данных для графика
+  const trace = {
+    x: sortedTags,
+    y: sortedTags.map(tag => anomalyjson[tag]),
+    type: 'bar'
+  };
+
+  const layout = {
+    title: 'Аномальные теги',
+    xaxis: {
+      title: 'Теги',
+      tickvals: [...Array(sortedTags.length).keys()],
+      ticktext: sortedTags,
+      tickfont: {
+        size: 8
+      }
+    },
+    yaxis: {
+      title: 'Значение аномальности'
+    }
+  };
+
+  Plotly.newPlot('anomalyBarChart', [trace], layout);
+</script>
+</body>
+
+
+
+
+
+
+
 
 <head>
   <title>Статистика по тегам</title>
@@ -489,52 +546,211 @@
   updatePieChart();
 
 </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Рейтинг пользователей</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="bd bgc-white">
+    <div class="layers">
+      <div class="layer w-100 p-20">
+        <h3>Рейтинг пользователей</h3>
+        <div id="bar-chart" style="height: 400px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var data = {
+      users: Array.from({length: 100}, (_, i) => "User " + (i + 1)),
+      ratings: Array.from({length: 100}, () => Math.floor(Math.random() * 100))
+    };
+
+    // Получение топ 50 пользователей с наименьшим рейтингом
+    var sortedIndices = data.ratings.map((rating, index) => index).sort((a, b) => data.ratings[a] - data.ratings[b]);
+    var topUsers = sortedIndices.slice(0, 50).map(index => data.users[index]);
+    var topRatings = sortedIndices.slice(0, 50).map(index => data.ratings[index]);
+
+    // Создание столбчатой диаграммы
+    Plotly.newPlot('bar-chart', [{
+      x: topUsers,
+      y: topRatings,
+      type: 'bar'
+    }], {
+      title: 'Топ 50 пользователей с наименьшим рейтингом',
+      xaxis: {
+        title: 'Пользователь',
+        tickfont: {
+          size: 8 // Установка меньшего размера шрифта для подписей на оси X
+        }
+      },
+      yaxis: {
+        title: 'Уровень рейтинга'
+      }
+    });
+  </script>
+</body>
+</html>
 
 <head>
-  <title>Статистика рейтинга пользователей</title>
+  <title>Статистика по тегам</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
-      <div class="container mt-5">
-        <div class="bd bgc-white">
-          <div class="layers">
-            <div class="layer w-100 p-20">
-              <h3>Рейтинг пользователей</h3>
-              <div id="bar-chart" style="height: 400px;"></div>
-            </div>
-          </div>
-        </div>
+<div class="bd bgc-white">
+  <div class="layers">
+      <div class="layer w-100 p-20">
+          <h3>Конструктивность сообщений по неделям</h3>
+          <label for="uniqueTagSelector">Выберите тег: </label>
+          <select id="uniqueTagSelector">
+              <option value="all">Все теги</option>
+          </select>
+          <div id="uniqueBarChart" style="height: 400px;"></div>
       </div>
+  </div>
+</div>
 
-      <script>
-          var data = {
-            users: Array.from({length: 100}, (_, i) => "User " + (i + 1)),
-            ratings: Array.from({length: 100}, () => Math.floor(Math.random() * 100))
-          };
+<script>
+const uniqueConstructiveData = {
+  '2023-W39': {'Tag1': 10, 'Tag2': 15},
+  '2023-W04': {'Tag1': 20, 'Tag2': 25},
+  '2023-W05': {'Tag221': 10, 'Tag2': 25},
+  '2023-W03': {'Tag111': 20, 'Tag234': 25}
+};
 
-          // Получение топ 50 пользователей с наименьшим рейтингом
-          var sortedIndices = data.ratings.map((rating, index) => index).sort((a, b) => data.ratings[a] - data.ratings[b]);
-          var topUsers = sortedIndices.slice(0, 50).map(index => data.users[index]);
-          var topRatings = sortedIndices.slice(0, 50).map(index => data.ratings[index]);
+// Создание списка всех уникальных тегов
+const uniqueAllTags = new Set();
+for (const weekData of Object.values(uniqueConstructiveData)) {
+  for (const tag of Object.keys(weekData)) {
+      uniqueAllTags.add(tag);
+  }
+}
 
-          // Создание столбчатой диаграммы
-          Plotly.newPlot('bar-chart', [{
-            x: topUsers,
-            y: topRatings,
-            type: 'bar'
-          }], {
-            title: 'Топ 50 пользователей с наименьшим рейтингом',
-            xaxis: {
-              title: 'Пользователь',
-              tickfont: {
-                size: 8  // установка меньшего размера шрифта для читаемости
-              }
-            },
-            yaxis: {
-              title: 'Уровень рейтинга'
-            }
-          });
-      </script>
+// Добавление тегов в фильтр
+const uniqueTagSelector = document.getElementById('uniqueTagSelector');
+uniqueAllTags.forEach(tag => {
+  const option = document.createElement('option');
+  option.value = tag;
+  option.textContent = tag;
+  uniqueTagSelector.appendChild(option);
+});
+
+function updateUniquePlot() {
+  const selectedTag = uniqueTagSelector.value;
+  const weeks = Object.keys(uniqueConstructiveData).sort();
+
+  const values = weeks.map(week => {
+      const weekData = uniqueConstructiveData[week];
+      if (selectedTag === 'all') {
+          const sum = Object.values(weekData).reduce((a, b) => a + b, 0);
+          return sum / Object.keys(weekData).length;
+      }
+      return weekData[selectedTag] || 0;
+  });
+
+  const trace = {
+      x: weeks,
+      y: values,
+      type: 'bar',
+      name: selectedTag
+  };
+
+  const layout = {
+      title: `Конструктивность сообщений по неделям`,
+      xaxis: {title: 'Неделя'},
+      yaxis: {title: 'Количество'}
+  };
+
+  Plotly.newPlot('uniqueBarChart', [trace], layout);
+}
+
+uniqueTagSelector.addEventListener('change', updateUniquePlot);
+
+// Инициализация графика
+updateUniquePlot();
+</script>
+
+</body>
+<div class="bd bgc-white">
+  <div class="layers">
+      <div class="layer w-100 p-20">
+          <h3>Токсичность сообщений по неделям</h3>
+          <label for="toxicTagSelector">Выберите тег: </label>
+          <select id="toxicTagSelector">
+              <option value="all">Все теги</option>
+          </select>
+          <div id="toxicBarChart" style="height: 400px;"></div>
+      </div>
+  </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+const toxicDataByWeek = {
+  '2023-W39': {'Tag1': 10, 'Tag2': 15},
+  '2023-W04': {'Tag1': 20, 'Tag2': 25},
+  '2023-W05': {'Tag221': 10, 'Tag2': 25},
+  '2023-W03': {'Tag111': 20, 'Tag234': 25}
+};
+
+// Populate list of unique tags
+const allUniqueTags = new Set();
+for (const weekData of Object.values(toxicDataByWeek)) {
+  for (const tag of Object.keys(weekData)) {
+      allUniqueTags.add(tag);
+  }
+}
+
+// Populate tag filter
+const toxicTagSelector = document.getElementById('toxicTagSelector');
+allUniqueTags.forEach(tag => {
+  const option = document.createElement('option');
+  option.value = tag;
+  option.textContent = tag;
+  toxicTagSelector.appendChild(option);
+});
+
+function renderToxicPlot() {
+  const selectedTag = toxicTagSelector.value;
+  const weeks = Object.keys(toxicDataByWeek).sort();
+
+  const values = weeks.map(week => {
+      const weekData = toxicDataByWeek[week];
+      if (selectedTag === 'all') {
+          const sum = Object.values(weekData).reduce((a, b) => a + b, 0);
+          return sum / Object.keys(weekData).length;
+      }
+      return weekData[selectedTag] || 0;
+  });
+
+  const trace = {
+      x: weeks,
+      y: values,
+      type: 'bar',
+      name: selectedTag
+  };
+
+  const layout = {
+      title: `Токсичность сообщений по неделям`,
+      xaxis: {title: 'Неделя'},
+      yaxis: {title: 'Количество'}
+  };
+
+  Plotly.newPlot('toxicBarChart', [trace], layout);
+}
+
+toxicTagSelector.addEventListener('change', renderToxicPlot);
+
+// Initialize the chart
+renderToxicPlot();
+</script>
+
+</body>
 
 
       </div>
