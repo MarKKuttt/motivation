@@ -31,3 +31,17 @@ class ConstructiveCriterion:
                 (self.__dict__[key] * weights.__dict__[key] for key in self.__dict__)
             ))
         return sum(product.values())
+
+
+REPLACEMENTS_TEXT = {
+    r'[0-9\.]+': '',
+    r'[\*]+': '',
+    r'\[]\(.*\)': '',
+    r'\[.*\]\(.*\)': '',
+    r'http|ftp|https):[^\s]+': 'url',
+    '**.**.****': '<ДАТА>',
+    '**.**': '<ДАТА>',
+    '** ** ******': '<ДАТА>',
+    r'[\.]+': '.',
+    '*': ''
+}

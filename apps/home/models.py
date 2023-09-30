@@ -1,9 +1,11 @@
 # -*- encoding: utf-8 -*-
+from typing import Any
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+
+from ._ml_models import process_msg_text
 
 
 class AppealInitiator(models.Model):
@@ -58,6 +60,7 @@ class Tag(models.Model):
         default='#FF0000'
     )
     group = models.CharField(
+        default=None,
         max_length=30,
         unique=False,
         verbose_name=_('Группа тэга'),
@@ -102,8 +105,9 @@ class TimeSeriesAnomaly(models.Model):
 class Appeal(models.Model):
     initiator = models.ForeignKey(
         AppealInitiator,
-        on_delete=models.SET_DEFAULT,
-        default='<Неизвестный>',
+        null=True,
+        # blank=True,
+        on_delete=models.SET_NULL,
         related_name='appeals',
         verbose_name=_('Заявитель')
     )
@@ -111,11 +115,6 @@ class Appeal(models.Model):
         max_length=300,
         unique=False,
         verbose_name=_('Текст обращения'),
-    )
-    processed_message = models.CharField(
-        max_length=300,
-        unique=False,
-        verbose_name=_('АВТО: Текст обращения обработанный'),
     )
     initial_theme = models.CharField(
         max_length=300,
@@ -134,23 +133,31 @@ class Appeal(models.Model):
     attachment = models.BooleanField(
         verbose_name=_('Наличие вложения')
     )
+    processed_message = models.CharField(
+        blank=True,
+        max_length=300,
+        unique=False,
+        verbose_name=_('АВТО: Текст обращения обработанный'),
+    )
     tags = models.ManyToManyField(
         Tag,
+        null=True,
         related_name='appeals',
         verbose_name=_('Теги')
     )
-    mentioned = models.CharField(
-        max_length=300,
-        unique=False,
+    mentioned = models.BooleanField(
+        blank=True,
         verbose_name=_('Упоминание сотрудника или клиента'),
     )
     toxic = models.DecimalField(
+        blank=True,
         max_digits=2,
         decimal_places=1,
         default=1.0,
         verbose_name=_('Токсичность сообщения')
     )
     constructive = models.DecimalField(
+        blank=True,
         max_digits=2,
         decimal_places=1,
         default=0.0,
@@ -161,3 +168,22 @@ class Appeal(models.Model):
         verbose_name = _('Обращение')
         verbose_name_plural = _('Обращения')
         ordering = ('zno_id', 'date_create')
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.processed_message:
+            self.processed_message = process_msg_text(str(self.message))
+
+        # if not self.tags:
+        #     pass
+            # self.tags = None
+
+        if not self.mentioned:
+            self.mentioned = False
+
+        if not self.toxic:
+            self.toxic = 0.0
+
+        if not self.constructive:
+            self.constructive = 0.0
+
+        super(Appeal, self).save(*args, **kwargs)
