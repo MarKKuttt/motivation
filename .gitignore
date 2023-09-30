@@ -1,6 +1,7 @@
 # byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+.idea/
 
 # tests and coverage
 *.pytest_cache
@@ -29,3 +30,8 @@ apps/static/assets/node_modules
 apps/static/assets/yarn.lock
 apps/static/assets/.temp
 
+
+apps/home/ner/sberbank-rubert-base-collection3/*
+apps/home/toxic/rubertconv_toxic_editor/*
+apps/home/toxic/rubertconv_toxic_editor
+apps/home/ner/sberbank-rubert-base-collection3
