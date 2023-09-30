@@ -15,20 +15,27 @@
           <div class="masonry-item  w-100">
             <div class="row gap-20">
               <!-- #Количество обращений ==================== -->
-              <div class='col-md-3'>
-                <div class="layers bd bgc-white p-20">
+
+            <div class='col-md-3'>
+              <div class="layers bd bgc-white p-20">
                   <div class="layer w-100 mB-10">
-                    <h6 class="lh-1">Количество обращений</h6>
+                      <h6 class="lh-1">Количество обращений</h6>
                   </div>
                   <div class="layer w-100">
-                    <div class="peers ai-sb fxw-nw">
-                      <div class="peer peer-greed">
-                        <span id="numberOfRequests">0</span> <!--  Филлер, будет заменен данными с бекенда --> 
+                      <div class="peers ai-sb fxw-nw">
+                          <div class="peer peer-greed">
+                            <span id="numberOfRequests">{{ appeal_count }}</span>
+                          </div>
                       </div>
-                    </div>
                   </div>
-                </div>
               </div>
+            </div>
+
+
+<!-- ... -->
+
+
+
               
               <!-- #Дата начала обращений ==================== -->
               <div class='col-md-3'>
@@ -39,7 +46,7 @@
                   <div class="layer w-100">
                     <div class="peers ai-sb fxw-nw">
                       <div class="peer peer-greed">
-                        <span id="earliestStartDate">N/A</span> <!-- Филлер, будет заменен данными с бекенда -->
+                        <span id="earliestStartDate">{{ earliest_appeal_date }}</span> <!-- Филлер, будет заменен данными с бекенда -->
                       </div>
                     </div>
                   </div>
@@ -56,7 +63,7 @@
                   <div class="layer w-100">
                     <div class="peers ai-sb fxw-nw">
                       <div class="peer peer-greed">
-                        <span id="latestEndDate">N/A</span> <!-- Филлер, будет заменен данными с бекенда -->
+                        <span id="latestEndDate">{{ latest_appeal_date }}</span> <!-- Филлер, будет заменен данными с бекенда -->
                       </div>
                     </div>
                   </div>
@@ -73,7 +80,7 @@
                   <div class="layer w-100">
                     <div class="peers ai-sb fxw-nw">
                       <div class="peer peer-greed">
-                        <span id="todaysRequests">0</span> <!-- Филлер, будет заменен данными с бекенда -->
+                        <span id="todaysRequests">{{ appeals_today_count }}</span> <!-- Филлер, будет заменен данными с бекенда -->
                       </div>
                     
               
@@ -202,20 +209,21 @@
             return filteredData;
           }
 
+          var jsonData = {{ jsonData | safe }}
 
 
-          const jsonData = {
-            '2023-W04': {'Tag1': 20, 'Tag2': 25},
-            '2023-W05': {'Tag221': 10, 'Tag2': 25},
-            '2023-W03': {'Tag111': 20, 'Tag234': 25},
-            '2023-W07': {'Tag321': 10, 'Tag2': 25},
-            '2023-W09': {'Tag221': 10, 'Tag2': 25},
-            '2023-W08': {'Tag12311': 20, 'Tag234': 25},
-            '2023-W40': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
-            '2023-W41': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
-            '2023-W49': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+          // const jsonData = {
+          //   '2023-W04': {'Tag1': 20, 'Tag2': 25},
+          //   '2023-W05': {'Tag221': 10, 'Tag2': 25},
+          //   '2023-W03': {'Tag111': 20, 'Tag234': 25},
+          //   '2023-W07': {'Tag321': 10, 'Tag2': 25},
+          //   '2023-W09': {'Tag221': 10, 'Tag2': 25},
+          //   '2023-W08': {'Tag12311': 20, 'Tag234': 25},
+          //   '2023-W40': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+          //   '2023-W41': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
+          //   '2023-W49': {'Tag1-тоуотмуом': 10, 'Tag2': 15},
 
-          };
+          // };
         
 
       
@@ -348,11 +356,9 @@
 </div>
 
 <script>
-  // Здесь должен быть ваш код для получения anomalyjson.
-  const anomalyjson = {'Tag1': 10, 'Tag2': 20, 'Tag3': 5, 'Tag4': 15};
 
-  // Предположим, дата последнего обновления аномальности (в формате 'YYYY-MM-DD')
-  const lastUpdatedDate = '2023-09-25';
+  var anomalyjson = {{ anomalyjson | safe }}
+  const lastUpdatedDate = '2023-09-30';
 
   // Рассчитываем разницу в днях между текущей датой и датой последнего обновления
   const today = new Date();
@@ -406,7 +412,6 @@
 
 <head>
   <title>Статистика по тегам</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <div class="bd bgc-white">
   <div class="layers">
@@ -551,7 +556,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Рейтинг пользователей</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
   <div class="bd bgc-white">
@@ -564,10 +568,11 @@
   </div>
 
   <script>
-    var data = {
-      users: Array.from({length: 100}, (_, i) => "User " + (i + 1)),
-      ratings: Array.from({length: 100}, () => Math.floor(Math.random() * 100))
-    };
+    // var data = {
+    //   users: Array.from({length: 100}, (_, i) => "User " + (i + 1)),
+    //   ratings: Array.from({length: 100}, () => Math.floor(Math.random() * 100))
+    // };
+    var data = {{ data | safe }};
 
     // Получение топ 50 пользователей с наименьшим рейтингом
     var sortedIndices = data.ratings.map((rating, index) => index).sort((a, b) => data.ratings[a] - data.ratings[b]);
@@ -597,7 +602,6 @@
 
 <head>
   <title>Статистика по тегам</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
@@ -615,12 +619,13 @@
 </div>
 
 <script>
-const uniqueConstructiveData = {
-  '2023-W39': {'Tag1': 10, 'Tag2': 15},
-  '2023-W04': {'Tag1': 20, 'Tag2': 25},
-  '2023-W05': {'Tag221': 10, 'Tag2': 25},
-  '2023-W03': {'Tag111': 20, 'Tag234': 25}
-};
+// const uniqueConstructiveData = {
+//   '2023-W39': {'Tag1': 10, 'Tag2': 15},
+//   '2023-W04': {'Tag1': 20, 'Tag2': 25},
+//   '2023-W05': {'Tag221': 10, 'Tag2': 25},
+//   '2023-W03': {'Tag111': 20, 'Tag234': 25}
+// };
+var uniqueConstructiveData = {{ uniqueConstructiveData | safe }};
 
 // Создание списка всех уникальных тегов
 const uniqueAllTags = new Set();
@@ -688,16 +693,15 @@ updateUniquePlot();
   </div>
 </div>
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <script>
-const toxicDataByWeek = {
-  '2023-W39': {'Tag1': 10, 'Tag2': 15},
-  '2023-W04': {'Tag1': 20, 'Tag2': 25},
-  '2023-W05': {'Tag221': 10, 'Tag2': 25},
-  '2023-W03': {'Tag111': 20, 'Tag234': 25}
-};
-
+// const toxicDataByWeek = {
+//   '2023-W39': {'Tag1': 10, 'Tag2': 15},
+//   '2023-W04': {'Tag1': 20, 'Tag2': 25},
+//   '2023-W05': {'Tag221': 10, 'Tag2': 25},
+//   '2023-W03': {'Tag111': 20, 'Tag234': 25}
+// };
+var toxicDataByWeek = {{ toxicDataByWeek | safe }};
 // Populate list of unique tags
 const allUniqueTags = new Set();
 for (const weekData of Object.values(toxicDataByWeek)) {

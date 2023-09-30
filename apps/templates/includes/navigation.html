@@ -3,8 +3,15 @@
       
       <!-- This section contains buttons -->
       <div class="d-flex align-items-center"> <!-- align-items-center for vertical centering -->
-          <button class="btn btn-custom" onclick="callDatasetDownload()">Выгрузка датасета</button>
-          <button class="btn btn-custom ml-2" onclick="callFillerMethod()">Какая та кнопка еще </button>
+        <div class="d-flex align-items-center">
+            <div class="btn btn-custom" onclick="window.location.href='/export/'">
+              Выгрузка датасета
+            </div>
+          </div>
+          
+                    
+                  
+          <button class="btn btn-custom ml-2" onclick="callFillerMethod()">Обновление тегов </button>
 
           <button class="btn btn-custom ml-2" onclick="callAnomalyUpdate()">Обновление данных по аномалиям</button>
       </div>

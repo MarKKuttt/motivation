@@ -9,6 +9,7 @@ env = environ.Env(
     # set casting, default value
     DEBUG=(bool, True)
 )
+STATIC_URL = '/static/'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -39,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home'  # Enable the inner home (home)
+    'apps.home',  # Enable the inner home (home)
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +145,9 @@ STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'apps/static'),
 )
 
-
+EMPTY_VALUE_DISPLAY = None
 #############################################################
 #############################################################
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "apps/static"),
+]
